@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Form</title>
+
+    <style>
+        body{
+            font-family: poppins;
+            background:#f07272;
+            margin: 10px;
+        }
+
+        .container{
+            width:400px;
+            margin:40px auto;
+            background:white;
+            padding:20px;
+            border-radius:50px;
+        }
+
+        h2{
+            text-align:center;
+            color:#cc0000;
+            margin-bottom:20px;
+        }
+
+
+        input, select, textarea{
+            width:100%;
+            padding:12px;
+            margin-top:2px;
+            margin-bottom:10px;
+            border:1px solid #ccc;
+            border-radius:30px;
+            box-sizing:border-box;
+        }
+
+        .gender input,
+        .skills input{
+            width:auto;
+            margin-right:5px;
+        }
+
+        .gender,
+        .skills{
+            margin-bottom:15px;
+        }
+
+        input[type="submit"]{
+            background:#0066cc;
+            color:white;
+            border:none;
+            cursor:pointer;
+        }
+
+        input[type="submit"]:hover{
+            background:#004d99;
+        }
+
+        input[type="reset"]{
+            background:#999;
+            color:white;
+            border:none;
+            cursor:pointer;
+        }
+
+        input[type="reset"]:hover{
+            background:#666;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Registration Form</h2>
+
+    <form>
+
+        <label>Full Name</label>
+        <input type="text" placeholder="Enter your name">
+
+        <label>Email</label>
+        <input type="email" placeholder="Enter your email">
+
+        <label>Password</label>
+        <input type="password" placeholder="Enter password">
+
+        <label>Gender</label>
+
+        <div class="gender">
+            <input type="radio" name="gender"> Male
+            <input type="radio" name="gender"> Female
+            <input type="radio" name="gender"> Other
+        </div>
+
+
+        <label>Skills</label>
+
+        <div class="skills">
+            <input type="checkbox"> HTML
+            <input type="checkbox"> CSS
+            <input type="checkbox"> Java
+            <input type="checkbox"> Python
+        </div>
+
+        <input type="submit" value="Register">
+        <input type="reset" value="Clear">
+
+    </form>
+
+</div>
+
+</body>
+</html>
