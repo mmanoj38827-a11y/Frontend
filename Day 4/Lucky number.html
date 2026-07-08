@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lucky Number</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:'Segoe UI',sans-serif;overflow:hidden;background:#1a1a2e}
+.bg{position:fixed;width:100%;height:100%;z-index:-1;background:radial-gradient(ellipse at 20% 80%,#16213e 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,#0f3460 0%,transparent 50%),radial-gradient(ellipse at 50% 50%,#1a1a2e 0%,#0a0a1a 100%)}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.6;animation:float 8s ease-in-out infinite}
+.orb:nth-child(1){width:300px;height:300px;background:#e94560;top:10%;left:10%;animation-delay:0s}
+.orb:nth-child(2){width:250px;height:250px;background:#533483;top:60%;right:15%;animation-delay:2s}
+.orb:nth-child(3){width:200px;height:200px;background:#0f3460;bottom:20%;left:40%;animation-delay:4s}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.1)}}
+.card{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:30px;padding:50px 70px;text-align:center;box-shadow:0 25px 50px rgba(0,0,0,0.3)}
+h1{color:#e94560;font-size:2.2em;margin-bottom:10px;text-shadow:0 0 20px rgba(233,69,96,0.5)}
+.sub{color:#a0a0c0;font-size:0.95em;margin-bottom:30px}
+.slot{width:150px;height:150px;border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,0.1),rgba(255,255,255,0.02));border:2px solid rgba(233,69,96,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 30px;position:relative;overflow:hidden}
+.slot::before{content:'';position:absolute;width:100%;height:3px;background:linear-gradient(90deg,transparent,#e94560,transparent);top:50%;transform:translateY(-50%);opacity:0.5}
+#num{font-size:5em;font-weight:bold;color:#fff;text-shadow:0 0 30px rgba(255,255,255,0.5);transition:all 0.3s}
+#num.spin{animation:shake 0.1s infinite;color:#e94560}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.btn{padding:15px 50px;font-size:1.2em;border:none;border-radius:15px;background:linear-gradient(45deg,#e94560,#533483);color:#fff;cursor:pointer;box-shadow:0 10px 30px rgba(233,69,96,0.4);transition:all 0.3s;font-weight:bold;letter-spacing:1px}
+.btn:hover{transform:translateY(-3px);box-shadow:0 15px 40px rgba(233,69,96,0.6)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.particles{position:fixed;pointer-events:none}
+.particle{position:absolute;width:6px;height:6px;background:#e94560;border-radius:50%;animation:pop 1s ease-out forwards}
+@keyframes pop{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}
+</style>
+</head>
+<body>
+<div class="bg">
+<div class="orb"></div>
+<div class="orb"></div>
+<div class="orb"></div>
+</div>
+<div class="particles" id="particles"></div>
+<div class="card">
+<h1>🍀 Lucky Number</h1>
+<p class="sub">Click to reveal your fortune</p>
+<div class="slot">
+<div id="num">?</div>
+</div>
+<button class="btn" id="btn" onclick="generate()">✨ Generate</button>
+</div>
+<script>
+function generate(){
+let btn=document.getElementById('btn');
+let num=document.getElementById('num');
+btn.disabled=true;
+num.classList.add('spin');
+let count=0;
+let interval=setInterval(()=>{
+num.innerText=Math.floor(Math.random()*100)+1;
+count++;
+if(count>20){
+clearInterval(interval);
+num.classList.remove('spin');
+let lucky=Math.floor(Math.random()*100)+1;
+num.innerText=lucky;
+num.style.transform='scale(1.3)';
+num.style.color='#ffd700';
+setTimeout(()=>{num.style.transform='scale(1)';num.style.color='#fff';btn.disabled=false},400);
+burst();
+}
+},80);
+}
+function burst(){
+let p=document.getElementById('particles');
+for(let i=0;i<20;i++){
+let part=document.createElement('div');
+part.className='particle';
+part.style.left='50%';
+part.style.top='50%';
+let angle=(Math.PI*2*i)/20;
+let dist=80+Math.random()*60;
+part.style.setProperty('--x',Math.cos(angle)*dist+'px');
+part.style.setProperty('--y',Math.sin(angle)*dist+'px');
+p.appendChild(part);
+setTimeout(()=>part.remove(),1000);
+}
+}
+</script>
+</body>
+</html>

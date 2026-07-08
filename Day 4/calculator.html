@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Calculator</title>
+    <style>
+        /* okay so i wanted it to look like those old school calculators but cooler */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .calculator {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            width: 320px;
+        }
+
+        /* the screen where numbers show up */
+        .display {
+            background: #1a1a1a;
+            color: #00ff88;
+            font-size: 2.5rem;
+            padding: 15px;
+            text-align: right;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            min-height: 60px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* grid for buttons */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.1s;
+            font-weight: 600;
+        }
+
+        /* number buttons */
+        .btn-num {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-num:hover {
+            background: #5a5a5a;
+            transform: translateY(-2px);
+        }
+
+        .btn-num:active {
+            transform: translateY(0);
+        }
+
+        /* operator buttons (+, -, *, /) */
+        .btn-op {
+            background: #ff9500;
+            color: white;
+        }
+
+        .btn-op:hover {
+            background: #ffb143;
+        }
+
+        .btn-op:active {
+            transform: scale(0.95);
+        }
+
+        /* equals button */
+        .btn-eq {
+            background: #00c853;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .btn-eq:hover {
+            background: #00e676;
+        }
+
+        /* clear and delete */
+        .btn-clear {
+            background: #ff1744;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #ff4569;
+        }
+
+        .btn-del {
+            background: #ff9100;
+            color: white;
+        }
+
+        /* zero takes up 2 spaces */
+        .zero {
+            grid-column: span 2;
+        }
+
+        /* just some visual feedback */
+        button:active {
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <!-- this is where the magic happens (visually) -->
+        <div class="display" id="display">0</div>
+        
+        <div class="buttons">
+            <!-- top row: clear, delete, and some operators -->
+            <button class="btn-clear" onclick="clearAll()">C</button>
+            <button class="btn-del" onclick="deleteLast()">⌫</button>
+            <button class="btn-op" onclick="chooseOp('%')">%</button>
+            <button class="btn-op" onclick="chooseOp('/')">÷</button>
+
+            <!-- numbers 7-9 and multiply -->
+            <button class="btn-num" onclick="appendNum('7')">7</button>
+            <button class="btn-num" onclick="appendNum('8')">8</button>
+            <button class="btn-num" onclick="appendNum('9')">9</button>
+            <button class="btn-op" onclick="chooseOp('*')">×</button>
+
+            <!-- numbers 4-6 and minus -->
+            <button class="btn-num" onclick="appendNum('4')">4</button>
+            <button class="btn-num" onclick="appendNum('5')">5</button>
+            <button class="btn-num" onclick="appendNum('6')">6</button>
+            <button class="btn-op" onclick="chooseOp('-')">−</button>
+
+            <!-- numbers 1-3 and plus -->
+            <button class="btn-num" onclick="appendNum('1')">1</button>
+            <button class="btn-num" onclick="appendNum('2')">2</button>
+            <button class="btn-num" onclick="appendNum('3')">3</button>
+            <button class="btn-op" onclick="chooseOp('+')">+</button>
+
+            <!-- bottom row: zero, decimal, equals -->
+            <button class="btn-num zero" onclick="appendNum('0')">0</button>
+            <button class="btn-num" onclick="appendNum('.')">.</button>
+            <button class="btn-eq" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        // alright, here's the brain of the calculator
+        let currentNum = '0';      // what's on screen right now
+        let previousNum = '';      // the number we had before hitting an operator
+        let operator = null;       // +, -, *, /, or %
+        let shouldResetScreen = false;  // flag to know if we should clear screen for next number
+
+        const display = document.getElementById('display');
+
+        // update the screen with whatever we're working with
+        function updateDisplay() {
+            display.textContent = currentNum;
+        }
+
+        // when someone clicks a number button
+        function appendNum(num) {
+            // if screen shows 0 or we just hit an operator, replace it
+            if (currentNum === '0' || shouldResetScreen) {
+                currentNum = num;
+                shouldResetScreen = false;
+            } else {
+                // don't let them type multiple decimals lol
+                if (num === '.' && currentNum.includes('.')) return;
+                currentNum += num;
+            }
+            updateDisplay();
+        }
+
+        // when someone hits +, -, *, /, or %
+        function chooseOp(op) {
+            // if they already have an operator waiting, just calculate first
+            if (operator !== null && !shouldResetScreen) {
+                calculate();
+            }
+            
+            previousNum = currentNum;
+            operator = op;
+            shouldResetScreen = true;  // next number will replace the screen
+        }
+
+        // the big moment - equals button
+        function calculate() {
+            if (operator === null || previousNum === '') return;
+            
+            let result;
+            const prev = parseFloat(previousNum);
+            const curr = parseFloat(currentNum);
+
+            // doing the math
+            switch (operator) {
+                case '+':
+                    result = prev + curr;
+                    break;
+                case '-':
+                    result = prev - curr;
+                    break;
+                case '*':
+                    result = prev * curr;
+                    break;
+                case '/':
+                    if (curr === 0) {
+                        result = "nice try 😂";  // division by zero protection
+                        break;
+                    }
+                    result = prev / curr;
+                    break;
+                case '%':
+                    result = prev % curr;
+                    break;
+                default:
+                    return;
+            }
+
+            // clean up weird floating point stuff (like 0.1 + 0.2 = 0.30000000004)
+            if (typeof result === 'number') {
+                result = Math.round(result * 100000000) / 100000000;
+            }
+
+            currentNum = result.toString();
+            operator = null;
+            previousNum = '';
+            shouldResetScreen = true;
+            updateDisplay();
+        }
+
+        // clear everything and start fresh
+        function clearAll() {
+            currentNum = '0';
+            previousNum = '';
+            operator = null;
+            shouldResetScreen = false;
+            updateDisplay();
+        }
+
+        // backspace - remove last digit
+        function deleteLast() {
+            if (currentNum.length === 1) {
+                currentNum = '0';
+            } else {
+                currentNum = currentNum.slice(0, -1);
+            }
+            updateDisplay();
+        }
+
+        // bonus: keyboard support because why not
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') appendNum(e.key);
+            if (e.key === '.') appendNum('.');
+            if (e.key === '+') chooseOp('+');
+            if (e.key === '-') chooseOp('-');
+            if (e.key === '*') chooseOp('*');
+            if (e.key === '/') chooseOp('/');
+            if (e.key === '%') chooseOp('%');
+            if (e.key === 'Enter' || e.key === '=') calculate();
+            if (e.key === 'Backspace') deleteLast();
+            if (e.key === 'Escape') clearAll();
+        });
+    </script>
+
+</body>
+</html>
